@@ -16,14 +16,14 @@ def get_drive_service():
     return build('drive', 'v3', credentials=creds)
 
 # --- 2. ファイルリストの取得（高速化のためキャッシュを利用） ---
-@st.cache_data(ttl=600)  # 10分間キャッシュを保持
+@st.cache_data(ttl=600)
 def fetch_photo_list(folder_id):
     service = get_drive_service()
-    # フォルダ内の画像ファイルを取得（ID, 名前, サムネイル, 作成日時）
+    # photoMetadata ではなく imageMediaMetadata を指定します
     query = f"'{folder_id}' in parents and mimeType contains 'image/'"
     results = service.files().list(
         q=query, 
-        fields="files(id, name, thumbnailLink, createdTime)",
+        fields="files(id, name, thumbnailLink, imageMediaMetadata, createdTime)",
         pageSize=1000
     ).execute()
     return results.get('files', [])
@@ -53,10 +53,19 @@ else:
     if not photos:
         st.info("フォルダに画像が見つかりませんでした。")
     else:
-        # 作成日時でソート（新しい順）
-        photos.sort(key=lambda x: x.get('createdTime', ''), reverse=True)
-        
-        # グリッド表示
+        # --- [修正箇所①] 撮影日を優先する関数 ---
+        def get_best_date(x):
+            # メタデータ内の撮影時間 ('time') を取得
+            meta = x.get('imageMediaMetadata')
+            if meta and 'time' in meta:
+                return meta['time']
+            # 撮影日がない場合は、アップロード日 ('createdTime') を返す
+            return x.get('createdTime', '')
+
+        # 撮影日を基準にソート（新しい順）
+        photos.sort(key=get_best_date, reverse=True)
+
+        # --- グリッド表示 ---
         idx = 0
         while idx < len(photos):
             cols = st.columns(num_cols)
@@ -64,15 +73,16 @@ else:
                 if idx < len(photos):
                     photo = photos[idx]
                     with col:
-                        # Google Driveが生成する高速なサムネイルを利用
-                        # thumbnailLinkの末尾の =s220 を =s1000 に変えると少し高画質になります
                         thumb_url = photo.get('thumbnailLink', '').replace('=s220', '=s1000')
                         if thumb_url:
                             st.image(thumb_url, use_container_width=True)
                         else:
                             st.write("No Image")
                         
-                        # 日付を小さく表示
-                        date_str = photo.get('createdTime', '')[:10]
-                        st.caption(f"📅 {date_str}")
+                        # --- [修正箇所②] 日付の表示ロジック ---
+                        best_date = get_best_date(photo)
+                        # Google Driveの撮影日は "2023:10:01 12:00:00" 形式が多いので整形
+                        # 先頭10文字(YYYY:MM:DD)を取り、":" を "-" に置換
+                        display_date = best_date[:10].replace(':', '-')
+                        st.caption(f"📅 {display_date}")
                     idx += 1
