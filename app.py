@@ -29,7 +29,8 @@ def fetch_photo_list(folder_id):
     return results.get('files', [])
 
 # --- 3. UI部分 ---
-st.title("📸 Photo Gallery (Mizuho)")
+st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
+st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)
 
 # ここにGoogle DriveのフォルダIDを入力してください
 # URLの https://drive.google.com/drive/u/0/folders/XXXXX の XXXXX の部分です
