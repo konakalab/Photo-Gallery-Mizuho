@@ -32,6 +32,16 @@ def fetch_photo_list(folder_id):
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
 
+# 右クリック禁止と、ドラッグでの保存を抑制するCSS
+st.markdown("""
+    <style>
+    img {
+        pointer-events: none; /* 画像を直接クリック/保存できないようにする */
+        -webkit-touch-callout: none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Google DriveのフォルダID
 FOLDER_ID = "1lHnhd05AZ-0VZ_nk8FpGtAYA7AmOSd6U"
 
