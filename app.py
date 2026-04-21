@@ -32,20 +32,9 @@ def fetch_photo_list(folder_id):
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
 
-# ここにGoogle DriveのフォルダIDを入力してください
-# URLの https://drive.google.com/drive/u/0/folders/XXXXX の XXXXX の部分です
+# Google DriveのフォルダID
 FOLDER_ID = "1lHnhd05AZ-0VZ_nk8FpGtAYA7AmOSd6U"
 
-# ズームスライダー（1行あたりの枚数を変える）
-zoom_level = st.select_slider(
-    "表示モード（ズーム）",
-    options=["Year (細かく)", "Month (標準)", "Day (大きく)"],
-    value="Month (標準)"
-)
-cols_map = {"Year (細かく)": 8, "Month (標準)": 4, "Day (大きく)": 1}
-num_cols = cols_map[zoom_level]
-
-# 実行
 if FOLDER_ID == "あなたのフォルダIDをここに貼り付け":
     st.warning("Google DriveのフォルダIDをコードに入力してください。")
 else:
@@ -54,25 +43,58 @@ else:
     if not photos:
         st.info("フォルダに画像が見つかりませんでした。")
     else:
-        # --- [修正箇所①] 撮影日を優先する関数 ---
+        # 撮影日（または作成日）を取得する共通関数
         def get_best_date(x):
-            # メタデータ内の撮影時間 ('time') を取得
             meta = x.get('imageMediaMetadata')
             if meta and 'time' in meta:
                 return meta['time']
-            # 撮影日がない場合は、アップロード日 ('createdTime') を返す
             return x.get('createdTime', '')
 
-        # 撮影日を基準にソート（新しい順）
-        photos.sort(key=get_best_date, reverse=True)
+        # --- 新機能：期間指定スライダーの実装 ---
+        # 1. 全写真から日付(YYYY-MM-DD)を抽出して重複を除去し、昇順に並べる
+        all_dates = sorted(list(set([get_best_date(p)[:10].replace(':', '-') for p in photos])))
 
-        # --- グリッド表示 ---
+        if len(all_dates) > 1:
+            # st.select_slider の value にタプル (開始, 終了) を渡すと2点スライダーになる
+            start_date, end_date = st.select_slider(
+                "📅 表示する期間を選択してください",
+                options=all_dates,
+                value=(all_dates[0], all_dates[-1])
+            )
+        else:
+            # 写真が1日分しかない場合
+            start_date = end_date = all_dates[0] if all_dates else None
+            st.info(f"対象期間: {start_date}")
+
+        # ズームスライダー
+        zoom_level = st.select_slider(
+            "🔍 表示モード（ズーム）",
+            options=["Year (細かく)", "Month (標準)", "Day (大きく)"],
+            value="Month (標準)"
+        )
+        cols_map = {"Year (細かく)": 8, "Month (標準)": 4, "Day (大きく)": 1}
+        num_cols = cols_map[zoom_level]
+
+        # --- フィルタリングと表示 ---
+        # スライダーで選んだ期間内の写真だけを抽出
+        filtered_photos = [
+            p for p in photos 
+            if start_date <= get_best_date(p)[:10].replace(':', '-') <= end_date
+        ]
+
+        # 撮影日を基準にソート（新しい順）
+        filtered_photos.sort(key=get_best_date, reverse=True)
+
+        # 統計情報の表示
+        st.write(f"📊 {len(filtered_photos)} 枚を表示中 ({start_date} ～ {end_date})")
+
+        # グリッド表示
         idx = 0
-        while idx < len(photos):
+        while idx < len(filtered_photos):
             cols = st.columns(num_cols)
             for col in cols:
-                if idx < len(photos):
-                    photo = photos[idx]
+                if idx < len(filtered_photos):
+                    photo = filtered_photos[idx]
                     with col:
                         thumb_url = photo.get('thumbnailLink', '').replace('=s220', '=s1000')
                         if thumb_url:
@@ -80,10 +102,8 @@ else:
                         else:
                             st.write("No Image")
                         
-                        # --- [修正箇所②] 日付の表示ロジック ---
+                        # 日付の表示
                         best_date = get_best_date(photo)
-                        # Google Driveの撮影日は "2023:10:01 12:00:00" 形式が多いので整形
-                        # 先頭10文字(YYYY:MM:DD)を取り、":" を "-" に置換
                         display_date = best_date[:10].replace(':', '-')
                         st.caption(f"📅 {display_date}")
                     idx += 1
