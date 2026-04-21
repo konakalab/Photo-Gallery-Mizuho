@@ -3,7 +3,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import io
-from PIL import Image, ImageDraw, ImageFont  # ImageDraw, ImageFontを追加
+from PIL import Image
 
 # ページ設定
 st.set_page_config(layout="wide", page_title="Drive Photo Gallery")
@@ -28,38 +28,6 @@ def fetch_photo_list(folder_id):
     ).execute()
     return results.get('files', [])
 
-# --- 33行目付近に追加 ---
-@st.cache_data(show_spinner=False)
-def get_watermarked_image(file_id, text="photo by konakalab"):
-    service = get_drive_service()
-    # 1. Google Driveから画像をダウンロード
-    request = service.files().get_media(fileId=file_id)
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-    
-    # 2. Pillowで開いて文字入れ
-    img = Image.open(fh).convert("RGBA")
-    txt_layer = Image.new("RGBA", img.size, (255, 255, 255, 0))
-    
-    # フォントサイズを画像サイズに合わせて調整（短辺の約4%）
-    font_size = int(min(img.size) * 0.04)
-    # Streamlit Cloud環境でも動作するデフォルトフォントを使用
-    font = ImageFont.load_default() 
-    
-    draw = ImageDraw.Draw(txt_layer)
-    
-    # 右下に配置（マージンをとる）
-    margin = int(img.size[0] * 0.02)
-    # 簡易的に右下に配置
-    draw.text((img.size[0] - (font_size * 10), img.size[1] - (font_size * 2)), text, font=font, fill=(255, 255, 255, 160))
-    
-    # 合成してRGBに変換
-    combined = Image.alpha_composite(img, txt_layer).convert("RGB")
-    return combined
-    
 # --- 3. UI部分 ---
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
@@ -128,12 +96,11 @@ else:
                 if idx < len(filtered_photos):
                     photo = filtered_photos[idx]
                     with col:
-                        # サムネイルURLではなく、合成後の画像を取得
-                        try:
-                            wm_img = get_watermarked_image(photo['id'])
-                            st.image(wm_img, use_container_width=True)
-                        except Exception as e:
-                            st.error("画像読み込み失敗")
+                        thumb_url = photo.get('thumbnailLink', '').replace('=s220', '=s1000')
+                        if thumb_url:
+                            st.image(thumb_url, use_container_width=True)
+                        else:
+                            st.write("No Image")
                         
                         # 日付の表示
                         best_date = get_best_date(photo)
