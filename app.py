@@ -33,12 +33,30 @@ st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォ
 st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
 
-# 右クリック禁止と、ドラッグでの保存を抑制するCSS
+# --- 修正後のCSS設定（右クリック禁止 ＋ 画像間の余白ゼロ） ---
 st.markdown("""
     <style>
+    /* 1. 画像間の余白（カラムの隙間）をゼロにする */
+    [data-testid="stHorizontalBlock"] {
+        gap: 0px !important;
+    }
+    
+    /* 2. 各カラム自体のパディング（内側の余白）をゼロにする */
+    [data-testid="column"] {
+        padding: 0px !important;
+    }
+
+    /* 3. 画像自体の設定（右クリック禁止 ＋ 余白削除） */
     img {
-        pointer-events: none; /* 画像を直接クリック/保存できないようにする */
+        pointer-events: none; /* 右クリック・保存禁止 */
         -webkit-touch-callout: none;
+        margin: 0px !important;
+        border-radius: 0px !important; /* 完全に隙間をなくすため角丸をゼロに */
+    }
+    
+    /* 4. 画像の下に発生する数ピクセルの隙間を調整 */
+    .stImage {
+        margin-bottom: -7px !important; 
     }
     </style>
     """, unsafe_allow_html=True)
