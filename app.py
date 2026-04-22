@@ -56,7 +56,7 @@ st.markdown("""
     
     /* 4. 画像の下に発生する数ピクセルの隙間を調整 */
     .stImage {
-        margin-bottom: -1px !important; 
+        margin-bottom: -7px !important; 
     }
     </style>
     """, unsafe_allow_html=True)
