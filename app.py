@@ -30,7 +30,7 @@ def fetch_photo_list(folder_id):
 
 # --- 3. UI部分 ---
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
-st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
+st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)および同球技場の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
 
 # --- 修正後のCSS設定（右クリック禁止 ＋ 画像間の余白ゼロ） ---
