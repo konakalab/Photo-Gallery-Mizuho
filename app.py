@@ -99,22 +99,38 @@ else:
         # 統計情報の表示
         st.write(f"📊 {len(filtered_photos)} 枚を表示中 ({start_date} ～ {end_date})")
 
-        # グリッド表示
-        idx = 0
-        while idx < len(filtered_photos):
+        # --- グリッド表示（日付グループ化版） ---
+        
+        # 1. ズームレベルに応じた日付フォーマットの定義
+        if zoom_level == "Year (細かく)":
+            fmt = lambda d: f"{d[:4]}年"
+        elif zoom_level == "Month (標準)":
+            fmt = lambda d: f"{d[:7].replace('-', '年')}月"
+        else: # Day
+            fmt = lambda d: f"{d[:10].replace('-', '/')}（{d[:10]}）"
+
+        # 2. 写真をグループ化
+        from collections import defaultdict
+        grouped_photos = defaultdict(list)
+        for p in filtered_photos:
+            date_key = fmt(get_best_date(p)[:10].replace(':', '-'))
+            grouped_photos[date_key].append(p)
+
+        # 3. グループごとに表示
+        for date_label, group in grouped_photos.items():
+            # 日付の見出しを表示
+            st.subheader(date_label)
+            
+            # そのグループ内の写真をグリッド表示
             cols = st.columns(num_cols)
-            for col in cols:
-                if idx < len(filtered_photos):
-                    photo = filtered_photos[idx]
-                    with col:
-                        thumb_url = photo.get('thumbnailLink', '').replace('=s220', '=s1000')
-                        if thumb_url:
-                            st.image(thumb_url, use_container_width=True)
-                        else:
-                            st.write("No Image")
-                        
-                        # 日付の表示
-                        best_date = get_best_date(photo)
-                        display_date = best_date[:10].replace(':', '-')
-                        st.caption(f"📅 {display_date}")
-                    idx += 1
+            for i, photo in enumerate(group):
+                col = cols[i % num_cols] # カラムをループさせる
+                with col:
+                    thumb_url = photo.get('thumbnailLink', '').replace('=s220', '=s1000')
+                    if thumb_url:
+                        st.image(thumb_url, use_container_width=True)
+                    else:
+                        st.write("No Image")
+            
+            # グループ間に少し余白を入れる
+            st.markdown("---")
