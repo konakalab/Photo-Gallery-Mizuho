@@ -102,12 +102,15 @@ else:
         # --- グリッド表示（日付グループ化版） ---
         
         # 1. ズームレベルに応じた日付フォーマットの定義
+        # --- 日付表示形式の修正 ---
         if zoom_level == "Year (細かく)":
             fmt = lambda d: f"{d[:4]}年"
         elif zoom_level == "Month (標準)":
-            fmt = lambda d: f"{d[:7].replace('-', '年')}月"
+            # 2026-04 -> 2026年4月
+            fmt = lambda d: f"{int(d[:4])}年{int(d[5:7])}月"
         else: # Day
-            fmt = lambda d: f"{d[:10].replace('-', '/')}（{d[:10]}）"
+            # 2026-04-19 -> 2026年4月19日
+            fmt = lambda d: f"{int(d[:4])}年{int(d[5:7])}月{int(d[8:10])}日"
 
         # 2. 写真をグループ化
         from collections import defaultdict
