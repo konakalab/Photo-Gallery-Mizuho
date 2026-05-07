@@ -95,11 +95,12 @@ else:
             start_date = end_date = all_dates[0] if all_dates else None
             st.info(f"対象期間: {start_date}")
 
-        # ズームスライダー
-        zoom_level = st.select_slider(
+        # --- 修正：スライダーからラジオボタンに変更 ---
+        zoom_level = st.radio(
             "🔍 表示モード（ズーム）",
             options=["Year (細かく)", "Month (標準)", "Day (大きく)"],
-            value="Month (標準)"
+            index=1,        # デフォルトで "Month (標準)" を選択
+            horizontal=True # ラジオボタンを横並びにする
         )
         cols_map = {"Year (細かく)": 8, "Month (標準)": 4, "Day (大きく)": 1}
         num_cols = cols_map[zoom_level]
