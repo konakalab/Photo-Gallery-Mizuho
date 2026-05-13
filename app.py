@@ -29,6 +29,13 @@ def fetch_photo_list(folder_id):
     return results.get('files', [])
 
 # --- 3. UI部分 ---
+# --- 修正：トップにバナー画像を追加 ---
+# 1lHnh... のフォルダ内にある特定の画像URLか、外部公開されている画像URLを指定してください
+BANNER_IMAGE_URL = "ここにバナー画像のURLを入力（またはGoogle Driveの画像リンク）"
+
+if BANNER_IMAGE_URL != "https://drive.google.com/file/d/1opAb-U5hW_WrGcdQN6xL3guVU9hDkOPa/view?usp=sharing":
+    st.image(BANNER_IMAGE_URL, use_container_width=True)
+
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)および同球技場の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
@@ -57,6 +64,11 @@ st.markdown("""
     /* 4. 画像の下に発生する数ピクセルの隙間を調整 */
     .stImage {
         margin-bottom: -15px !important; 
+    }
+
+    /* バナー画像下の余白を調整 */
+    [data-testid="stImage"] {
+        margin-bottom: 0px !important;
     }
     </style>
     """, unsafe_allow_html=True)
