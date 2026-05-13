@@ -196,3 +196,12 @@ else:
             
             # グループ間に少し余白を入れる
             st.markdown("---")
+        
+        # --- フッター画像の表示 ---
+        # FOOTER_FILE_ID が設定されている場合のみ実行
+        if FOOTER_FILE_ID != "ここにフッター用画像のファイルIDを貼り付け":
+            footer_data = get_drive_image_data(FOOTER_FILE_ID)
+            if footer_data:
+                st.image(footer_data, use_container_width=True)
+            else:
+                st.error("フッター画像の読み込みに失敗しました。IDと共有設定を確認してください。")            
