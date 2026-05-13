@@ -29,18 +29,28 @@ def fetch_photo_list(folder_id):
     return results.get('files', [])
 
 # --- 3. UI部分 ---
-# --- 修正：トップにバナー画像を追加 ---
-# 先ほど共有いただいた画像のファイルIDを設定しました
-BANNER_FILE_ID = "16vRjmr7RxYonEUbqHTQSnqAKvBnIZm9i" 
+# --- 修正：バナー画像の読み込み方法を変更 ---
+BANNER_FILE_ID = "16vRjmr7RxYonEUbqHTQSnqAKvBnIZm9i"
 
-# 直リンク用のURLを作成
-BANNER_IMAGE_URL = f"https://drive.google.com/uc?export=view&id={BANNER_FILE_ID}"
+@st.cache_data(ttl=3600)
+def get_banner_image(file_id):
+    service = get_drive_service()
+    request = service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+    return fh.getvalue()
 
 try:
-    # 画面幅いっぱいに表示し、デバイスに応じて自動拡大縮小させます
-    st.image(BANNER_IMAGE_URL, use_container_width=True)
+    # データをバイナリとして取得して表示
+    banner_bytes = get_banner_image(BANNER_FILE_ID)
+    st.image(banner_bytes, use_container_width=True)
 except Exception as e:
-    st.error(f"バナー画像の読み込みに失敗しました。画像の共有設定が『リンクを知っている全員』になっているか確認してください。")
+    # 失敗した場合は以前の形式も試す（バックアップ）
+    BANNER_IMAGE_URL = f"https://drive.google.com/uc?export=view&id={BANNER_FILE_ID}"
+    st.image(BANNER_IMAGE_URL, use_container_width=True)
     
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)および同球技場の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
