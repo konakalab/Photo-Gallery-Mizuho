@@ -31,9 +31,8 @@ def fetch_photo_list(folder_id):
 # --- 3. UI部分 ---
 # --- 修正：トップにバナー画像を追加 ---
 # 1lHnh... のフォルダ内にある特定の画像URLか、外部公開されている画像URLを指定してください
-BANNER_IMAGE_URL = "ここにバナー画像のURLを入力（またはGoogle Driveの画像リンク）"
-
-if BANNER_IMAGE_URL != "https://drive.google.com/file/d/1opAb-U5hW_WrGcdQN6xL3guVU9hDkOPa/view?usp=sharing":
+BANNER_IMAGE_URL = "https://drive.google.com/file/d/1opAb-U5hW_WrGcdQN6xL3guVU9hDkOPa/view?usp=sharing"
+if BANNER_IMAGE_URL != "ここに画像ファイルのIDを貼り付け":
     st.image(BANNER_IMAGE_URL, use_container_width=True)
 
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
