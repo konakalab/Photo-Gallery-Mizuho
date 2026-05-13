@@ -30,19 +30,18 @@ def fetch_photo_list(folder_id):
 
 # --- 3. UI部分 ---
 # --- 修正：トップにバナー画像を追加 ---
-# 1. Google Driveの共有リンクから取得したファイルIDをここに貼り付けてください
+# 先ほど共有いただいた画像のファイルIDを設定しました
 BANNER_FILE_ID = "1opAb-U5hW_WrGcdQN6xL3guVU9hDkOPa" 
 
-# 2. 直リンク用のURLを作成
+# 直リンク用のURLを作成
 BANNER_IMAGE_URL = f"https://drive.google.com/uc?export=view&id={BANNER_FILE_ID}"
 
-# バナーの表示（ファイルIDがデフォルトのままでない場合のみ実行）
-if BANNER_FILE_ID != "ここに画像ファイルのIDを貼り付け":
-    try:
-        st.image(BANNER_IMAGE_URL, use_container_width=True)
-    except Exception as e:
-        st.error("バナー画像の読み込みに失敗しました。URLが正しいか、画像が『リンクを知っている全員』に公開されているか確認してください。")
-
+try:
+    # 画面幅いっぱいに表示し、デバイスに応じて自動拡大縮小させます
+    st.image(BANNER_IMAGE_URL, use_container_width=True)
+except Exception as e:
+    st.error(f"バナー画像の読み込みに失敗しました。画像の共有設定が『リンクを知っている全員』になっているか確認してください。")
+    
 st.title("📸 パロマ瑞穂スタジアム(瑞穂公園陸上競技場)フォトギャラリー")
 st.info(f"パロマ瑞穂スタジアム(瑞穂公園陸上競技場)および同球技場の改修前(2019年)から改修後(2026年)に私が撮影した写真を公開します．写真の二次利用をご希望の方は[@konakalab](https://x.com/konakalab)へご相談下さい．")
 st.caption(f"写真撮影＆サイト構築： [@konakalab](https://x.com/konakalab)")
