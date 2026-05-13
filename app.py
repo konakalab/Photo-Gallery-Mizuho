@@ -198,10 +198,11 @@ else:
             st.markdown("---")
         
         # --- フッター画像の表示 ---
-        # FOOTER_FILE_ID が設定されている場合のみ実行
-        if FOOTER_FILE_ID != "ここにフッター用画像のファイルIDを貼り付け":
-            footer_data = get_drive_image_data(FOOTER_FILE_ID)
-            if footer_data:
-                st.image(footer_data, use_container_width=True)
-            else:
-                st.error("フッター画像の読み込みに失敗しました。IDと共有設定を確認してください。")            
+        try:
+            # データをバイナリとして取得して表示
+            banner_bytes = get_banner_image(FOOTER_FILE_ID)
+            st.image(banner_bytes, use_container_width=True)
+        except Exception as e:
+            # 失敗した場合は以前の形式も試す（バックアップ）
+            BANNER_IMAGE_URL = f"https://drive.google.com/uc?export=view&id={BANNER_FILE_ID}"
+            st.image(BANNER_IMAGE_URL, use_container_width=True)
