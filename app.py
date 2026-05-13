@@ -8,6 +8,17 @@ from PIL import Image
 # ページ設定
 st.set_page_config(layout="wide", page_title="Drive Photo Gallery")
 
+# --- リンク引用時（OGP）の設定 ---
+st.markdown(f"""
+    <head>
+        <meta property="og:title" content="パロマ瑞穂スタジアム フォトギャラリー | 2019-2026 改修の軌跡" />
+        <meta property="og:description" content="パロマ瑞穂スタジアムの改修前後の様子を記録したフォトギャラリーです。期間指定やズーム機能で閲覧できます。" />
+        <meta property="og:image" content="https://drive.google.com/uc?export=view&id=16vRjmr7RxYonEUbqHTQSnqAKvBnIZm9i" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+    </head>
+    """, unsafe_allow_html=True)
+
 # --- 1. Google Drive 認証 ---
 def get_drive_service():
     # StreamlitのSecretsから認証情報を読み込む
