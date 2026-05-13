@@ -31,7 +31,7 @@ def fetch_photo_list(folder_id):
 # --- 3. UI部分 ---
 # --- 修正：トップにバナー画像を追加 ---
 # 先ほど共有いただいた画像のファイルIDを設定しました
-BANNER_FILE_ID = "1opAb-U5hW_WrGcdQN6xL3guVU9hDkOPa" 
+BANNER_FILE_ID = "16vRjmr7RxYonEUbqHTQSnqAKvBnIZm9i" 
 
 # 直リンク用のURLを作成
 BANNER_IMAGE_URL = f"https://drive.google.com/uc?export=view&id={BANNER_FILE_ID}"
