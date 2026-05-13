@@ -42,6 +42,7 @@ def fetch_photo_list(folder_id):
 # --- 3. UI部分 ---
 # --- 修正：バナー画像の読み込み方法を変更 ---
 BANNER_FILE_ID = "16vRjmr7RxYonEUbqHTQSnqAKvBnIZm9i"
+FOOTER_FILE_ID = "1XbfsPXX_9xie53pxvWCsEs6LFkRbKAWn" # 最下部のフッター
 
 @st.cache_data(ttl=3600)
 def get_banner_image(file_id):
